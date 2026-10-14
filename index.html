@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#101b32">
+<title>EGX AI - البورصة المصرية</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#0b1220;color:#f1f5f9;font-family:Arial,sans-serif}
+header{background:#101b32;padding:22px 16px;text-align:center;border-bottom:2px solid #25c99a}
+header h1{margin:0;color:#25c99a;font-size:28px}
+header p{margin:8px 0 0;color:#cbd5e1}
+main{padding:16px;max-width:650px;margin:auto}
+.card{background:#172238;border:1px solid #2a3852;border-radius:14px;padding:16px;margin-bottom:14px}
+h2{font-size:18px;margin:0 0 12px}
+input,select,button{width:100%;padding:12px;border-radius:9px;border:1px solid #43516b;font-size:16px;margin-top:8px}
+input,select{background:#0b1220;color:white}
+button{background:#25c99a;color:#071b17;border:0;font-weight:bold}
+.small{font-size:13px;color:#aab7cc;line-height:1.7}
+.stock{display:flex;justify-content:space-between;gap:10px;padding:12px 0;border-bottom:1px solid #2a3852}
+.stock:last-child{border:0}
+.green{color:#25c99a}
+.yellow{color:#facc15}
+.result{line-height:2}
+footer{text-align:center;color:#8290a8;font-size:12px;padding:20px}
+</style>
+</head>
+<body>
+<header>
+<h1>EGX AI</h1>
+<p>مساعدك لتحليل البورصة المصرية</p>
+</header>
+<main>
+<div class="card">
+<h2>📊 لوحة المتابعة</h2>
+<p>تابع أسهمك وسجّل السعر لتحصل على قراءة فنية مبدئية.</p>
+<p class="small">تنبيه: الأسعار غير متصلة بالسوق في هذه النسخة. أدخل السعر بنفسك؛ النتائج حسابية وليست توصية شراء أو بيع.</p>
+</div>
+
+<div class="card">
+<h2>🔎 تحليل سهم</h2>
+<label for="name">اسم السهم أو رمزه</label>
+<input id="name" placeholder="مثال: COMI">
+<label for="price">السعر الحالي بالجنيه</label>
+<input id="price" type="number" min="0" step="0.01" placeholder="مثال: 25.50">
+<label for="resistance">المقاومة</label>
+<input id="resistance" type="number" min="0" step="0.01" placeholder="مستوى المقاومة">
+<label for="support">الدعم</label>
+<input id="support" type="number" min="0" step="0.01" placeholder="مستوى الدعم">
+<button onclick="analyze()">حلّل السهم</button>
+<div id="result" class="result"></div>
+</div>
+
+<div class="card">
+<h2>🎯 مستويات متابعة افتراضية</h2>
+<p class="small">أدخل سعر السهم لحساب مستويات توضيحية بنسبة مئوية.</p>
+<input id="entry" type="number" min="0" step="0.01" placeholder="سعر الدخول الافتراضي">
+<button onclick="levels()">احسب المستويات</button>
+<div id="levels" class="result"></div>
+</div>
+
+<div class="card">
+<h2>📌 قائمة المتابعة</h2>
+<div class="stock"><span>COMI — البنك التجاري الدولي</span><span class="yellow">أضف السعر</span></div>
+<div class="stock"><span>ETEL — المصرية للاتصالات</span><span class="yellow">أضف السعر</span></div>
+<div class="stock"><span>HRHO — إي إف جي القابضة</span><span class="yellow">أضف السعر</span></div>
+<div class="stock"><span>TMGH — مجموعة طلعت مصطفى</span><span class="yellow">أضف السعر</span></div>
+<p class="small">هذه قائمة أولية وليست قائمة كاملة أو أسعارًا لحظية.</p>
+</div>
+</main>
+<footer>EGX AI · نسخة تجريبية تعليمية</footer>
+
+<script>
+function num(id){return Number(document.getElementById(id).value)}
+function fmt(n){return n.toFixed(2)}
+function analyze(){
+ const name=document.getElementById('name').value.trim()||'السهم';
+ const p=num('price'),r=num('resistance'),s=num('support');
+ const out=document.getElementById('result');
+ if(p<=0||r<=0||s<=0||s>=r){
+ out.innerHTML='<p class="yellow">أدخل سعرًا ومقاومة ودعمًا صحيحين، مع كون الدعم أقل من المقاومة.</p>';return;
+ }
+ let msg=p>r?'السعر أعلى المقاومة المدخلة؛ تحقّق من الإغلاق وحجم التداول.':
+ p<=s?'السعر عند الدعم أو دونه؛ راقب احتمال كسر الدعم.':
+ 'السعر بين الدعم والمقاومة؛ لا توجد إشارة اختراق مؤكدة من هذه البيانات وحدها.';
+ out.innerHTML='<hr><strong>'+name+'</strong><br>السعر: '+fmt(p)+' جنيه<br>المقاومة: '+fmt(r)+' جنيه<br>الدعم: '+fmt(s)+' جنيه<br><p>'+msg+'</p><p class="small">التحليل لا يستخدم بيانات لحظية ولا يضمن اتجاه السعر.</p>';
+}
+function levels(){
+ const p=num('entry'),out=document.getElementById('levels');
+ if(p<=0){out.innerHTML='<p class="yellow">أدخل سعرًا صحيحًا أكبر من صفر.</p>';return}
+ out.innerHTML='هدف افتراضي +2%: <span class="green">'+fmt(p*1.02)+'</span><br>هدف افتراضي +5%: <span class="green">'+fmt(p*1.05)+'</span><br>مستوى -3%: <span class="yellow">'+fmt(p*0.97)+'</span><br>مستوى -5%: <span class="yellow">'+fmt(p*0.95)+'</span><p class="small">هذه مستويات حسابية فقط وليست توصية أو وقف خسارة مناسبًا لكل سهم.</p>';
+}
+</script>
+</body>
+  </html>
